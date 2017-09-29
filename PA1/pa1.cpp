@@ -7,14 +7,13 @@
 //
 
 #include <iostream>
-#include <cmath>
 
 class MagicSquare {
 private:
 	const int N; //Size of matrix
 	const int id; //Which square it is,
-	int ** square;
-	int ** mirrorSquare;
+	int ** square; //2D array that is our square
+	//Switch through which sqare this is and pick what transformation will happen
 	void transform() {
 		switch(id) {
 			case 1:
@@ -26,52 +25,59 @@ private:
 				flipV();
 				break;
 			case 4:
-				//Flip sq over h1
+				flipHV();
 				break;
 			case 5:
-				//Flip sq over h2
+				flipDD();
 				break;
 		}
 	}
+	//Flip the current square over the middle row
 	void flipH() {
 		int mid = N/2;
 		
 		for(int i = 0; i < mid; i++) {
 			int swapIndex = N - 1 -i;
 			
-			mirrorSquare[i] = square[swapIndex];
-			mirrorSquare[swapIndex] = square[i];
-			
-			square = mirrorSquare;
-			
-			/*int swapIndex = N - 1 - i;
-			
-			row1 = square[i];
-			row2 = square[swapIndex];
-			
-			//std::cout << swapIndex << "\n" << row1[0] << "\n";
-			
-			square[i] = row2;
-			square[swapIndex] = row1;
-			
-			//std::cout << square[swapIndex][0] << "\n" << row1[0] << "\n";
-			*/
+			for(int j = 0; j < N; j++) {
+				int temp = square[i][j];
+				
+				square[i][j] = square[swapIndex][j];
+				square[swapIndex][j] = temp;
+			}
 		}
 	}
+	//Flip the current square over the middle column
 	void flipV() {
-		/*int mid = N/2;
+		int mid = N/2;
 		
 		for(int i = 0; i < mid; i++) {
-			int swapIndex = N - 1 - i;
+			int swapIndex = N - 1 -i;
 			
-			int row1[] = square[i];
-			int row2[N] = square[swapIndex];
+			for(int j = 0; j < N; j++) {
+				int temp = square[j][i];
+				
+				square[j][i] = square[j][swapIndex];
+				square[j][swapIndex] = temp;
+			}
+		}
+	}
+	//Flip the current square over the middle row and column
+	void flipHV() {
+		flipH();
+		flipV();
+	}
+	//Flip the current square over the upward diagonal
+	void flipDD() {
+		for(int i = 0; i < N; i++) {
+			int temp = square[0][i];
 			
-			square[i] = row2;
-			square[swapIndex] = row1;
-		}*/
+			square[0][i] = square[i][0];
+			square[i][0] = temp;
+		}
 	}
 public:
+	//Initialize the object and fill the square arr
 	MagicSquare(int N, int id):N(N), id(id) {
 		square = new int*[N];
 		
@@ -85,40 +91,43 @@ public:
 		
 		std::cout << "\n" << "Magic square #" << id << " is:\n";
 	}
+	//Find the fill the current magic square
 	void fill() {
 		int row = 0;
 		int col = N/2;
 		
 		for(int i = 1; i <= (N * N); i++) {
+			//Save temp values of the original index
 			int tempRow = row, tempCol = col;
 			square[row][col] = i;
 			
 			row--;
 			col++;
 			
-			//Check if it is over te top
+			//Check if index is over the top
 			if(row < 0) {
 				row = N - 1;
 			}
 			
-			//Check if it is off to the right
+			//Check if index is off to the right
 			if(col >= N) {
 				col = 0;
 			}
 			
 			if(square[row][col] != 0) {
-				//Go back to original square
+				//Go back to original index w/ temp vals
 				row = tempRow;
 				col = tempCol;
 				
-				//Place below original square
+				//Place below original index
 				row++;
 			}
 		}
 		
-		mirrorSquare = square;
+		//Possibly transform the array to find a new version of the magic square
 		transform();
 		
+		//Print the square out
 		for(int i = 0; i < N; i++) {
 			for(int j = 0; j < N; j++) {
 				std::cout << square[i][j] << "\t";
@@ -127,6 +136,7 @@ public:
 			std::cout << "\n";
 		}
 	}
+	//Check the sums of the square to confirm it adds up correctly
 	void check() {
 		std::cout << "Checking the sum of every row: ";
 		for(int i = 0; i < N; i++) {
@@ -162,14 +172,13 @@ public:
 		}
 		std::cout << diag1 << " " << diag2;
 	}
+	//Deletes the pointers and frees up the memory
 	void end() {
 		for (int i = 0; i < N; ++i) {
 			delete[] square[i];
-			delete[] mirrorSquare[i];
 		}
 		
 		delete[] square;
-		delete[] mirrorSquare;
 		
 		std::cout << "\n";
 	}
@@ -180,6 +189,11 @@ int main() {
 	
 	std::cout << "Enter the size of a magic square: ";
 	std::cin >> N;
+	
+	if(N < 3 || N > 15 || (N % 2) == 0) {
+		std::cout << "Wrong input! Please try again by picking an odd number between 3 and 15. \n";
+		return 0;
+	}
 	
 	for(int i = 1; i <= 5; i++) {
 		MagicSquare square(N, i);
