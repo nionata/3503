@@ -13,6 +13,7 @@ private:
 	const int N; //Size of matrix
 	const int id; //Which square it is,
 	int ** square; //2D array that is our square
+	int ** tempSquare; //2D array that will temp hold the square
 	//Switch through which sqare this is and pick what transformation will happen
 	void transform() {
 		switch(id) {
@@ -70,22 +71,24 @@ private:
 	//Flip the current square over the upward diagonal
 	void flipDD() {
 		for(int i = 0; i < N; i++) {
-			int temp = square[0][i];
-			
-			square[0][i] = square[i][0];
-			square[i][0] = temp;
+			for(int j = 0; j < N; j++) {
+				square[j][N - 1 - i] = tempSquare[i][j];
+			}
 		}
 	}
 public:
 	//Initialize the object and fill the square arr
 	MagicSquare(int N, int id):N(N), id(id) {
 		square = new int*[N];
+		tempSquare = new int*[N];
 		
 		for (int i = 0 ; i < N; i++) {
 			square[i] = new int[N];
+			tempSquare[i] = new int[N];
 			
 			for(int a = 0; a < N; a++) {
 				square[i][a] = 0;
+				tempSquare[i][a] = 0;
 			}
 		}
 		
@@ -100,6 +103,7 @@ public:
 			//Save temp values of the original index
 			int tempRow = row, tempCol = col;
 			square[row][col] = i;
+			tempSquare[row][col] = i;
 			
 			row--;
 			col++;
@@ -176,9 +180,11 @@ public:
 	void end() {
 		for (int i = 0; i < N; ++i) {
 			delete[] square[i];
+			delete[] tempSquare[i];
 		}
 		
 		delete[] square;
+		delete[] tempSquare;
 		
 		std::cout << "\n";
 	}
