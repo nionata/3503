@@ -24,6 +24,8 @@ class Node {
 		void addWorst(std::string name, int mem, int counter);
 		void addBest(std::string name, int mem, int counter);
 		void kill(std::string, int counter);
+		void fragmentation(int counter);
+		int check(std::string name);
 };
 
 class LinkedList {

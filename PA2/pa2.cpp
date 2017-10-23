@@ -9,6 +9,9 @@
 #include "pa2.hpp"
 #include <iostream>
 #include <string>
+#include <stdio.h>
+#include <string.h>
+
 
 
 //Implementation for the LinkedList class
@@ -34,10 +37,22 @@ void LinkedList::print() {
 }
 
 void LinkedList::fragmentation() {
-	
+	head->fragmentation(0);
 }
 
 void LinkedList::add(std::string name, int mem, std::string algo) {
+	int memLeft = head->check(name);
+	
+	if(memLeft == -1) {
+		std::cout << "Error, Program " << name << " is already running!";
+		return;
+	}
+	
+	if(memLeft < mem) {
+		std::cout << "Error, there is not enough memory left for Program " << name << "!";
+		return;
+	}
+	
 	if(algo == "worst") {
 		head->addWorst(name, mem, 0);
 	} else {
@@ -58,7 +73,7 @@ Node::Node(std::string name, int mem) {
 }
 
 void Node::print(int page) {
-	std::cout << name << " " << mem << " ";
+	std::cout << name << "(" << mem << ") ";
 	
 	if(next == NULL) {
 		return;
@@ -86,7 +101,6 @@ void Node::addWorst(std::string name, int mem, int counter) {
 	while(temp->next != NULL) {
 		if (temp->name != "Free" and temp->next->name == "Free") {
 			tail = temp->next;
-			//std::cout << "Tail at " <<name;
 		}
 		temp = temp->next;
 	}
@@ -134,9 +148,41 @@ void Node::kill(std::string name, int counter) {
 	}
 }
 
+void Node::fragmentation(int counter) {
+	Node * temp = this;
+	
+	while(temp != NULL) {
+		if((temp->next == NULL or temp->next->name == "Free") and temp->name != "Free") {
+			counter += 1;
+		}
+		
+		temp = temp->next;
+	}
+	
+	std::cout << "There are " << counter << " fragment(s)!";
+	
+	return;
+}
+
+int Node::check(std::string name) {
+	Node * temp = this;
+	int counter = 0;
+	
+	while(temp != NULL) {
+		if(temp->name == name) {
+			return -1;
+		} else if(temp->mem == 0) {
+			counter += 4;
+		}
+		temp = temp->next;
+	}
+	
+	return counter;
+}
+
 
 //Main method
-int main(int argc, char* argv[]) {
+int main(int argc, char * argv[]) {
 	//Creating variables
 	LinkedList * bob = new LinkedList();
 	std::string algo = "best";
@@ -144,10 +190,10 @@ int main(int argc, char* argv[]) {
 	
 	//Decide which algo to use
 	if(argc == 2) {
-		if(std::strncmp(argv[1],"worst", 5) == 0) {
+		if(strncmp(argv[1],"worst", 5) == 0) {
 			std::cout << "Using worst fit algorithm. \n";
 			algo = "worst";
-		} else if(std::strncmp(argv[1],"best", 4) == 0) {
+		} else if(strncmp(argv[1],"best", 4) == 0) {
 			std::cout << "Using best fit algorithm. \n";
 		} else {
 			std::cout << "Invalid or missing arguments. Using best fit algorithm. \n";
@@ -184,6 +230,7 @@ int main(int argc, char* argv[]) {
 			std::cout << "\n";
 			bob->kill(name);
 		} else if(choice == 3) {
+			std::cout << "\n";
 			bob->fragmentation();
 		} else if(choice == 4) {
 			std::cout <<"\n";
