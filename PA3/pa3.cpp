@@ -11,61 +11,85 @@
 #include <iostream>
 #include <string>
 
-using namespace std;
 
-Stack::Stack() {
-	top = -1;
+//Implementation for the Node class
+Node::Node(string data) {
+	this->data = data;
+	next = NULL;
 }
 
-void Stack::push(int x) {
-	if(top > 10) {
-		cout << "Stack Overflow";
+void Node::print() {
+	cout << data << endl;
+	
+	if(next != NULL) {
+		next->print();
+	}
+}
+
+
+//Implementation for the Stack Linked List class
+StackLL::StackLL() {
+	head = NULL;
+}
+
+void StackLL::push(string data) {
+	if(head == NULL) {
+		head = new Node(data);
 		return;
-	} else {
-		a[++top] = x;
 	}
+	
+	Node* temp = new Node(data);
+	temp->next = head;
+	
+	head = temp;
 }
 
-int Stack::pop() {
-	if(top < 0) {
-		cout << "Stack underflow";
-		return 0;
-	} else {
-		return a[top--];
-	}
+Node* StackLL::pop() {
+	Node* temp = head;
+	
+	head = head->next;
+	
+	return temp;
 }
 
-bool Stack::isEmpty() {
-	return top < 0;
+void StackLL::print() {
+	head->print();
 }
 
-int Stack::getTopIndex() {
-	return top;
-}
-
-int Stack::getValue(int i) {
-	return a[i];
-}
 
 int main() {
-	//Testing stack
-	Stack * s = new Stack();
+	ifstream file;
+	string fileName = "";
 	
-	s->push(5);
+	do {
+		cout << "Please enter a local file name: ";
+		cin >> fileName;
+		
+		if(fileName == "EXIT") {
+			cout << "Sad to see you go buddy!" << endl;
+			return 0;
+		}
+		
+		file.open(fileName);
+		
+		if(!file) {
+			cout << "Invalid file! Try again or type EXIT to exit." << endl;
+		}
+	} while(!file);
 	
-	cout << s->getTopIndex();
-	cout << s->getValue(0);
+	cout << "Successfully loaded " << fileName << endl;
 	
-	if(s->isEmpty()) {
-		cout << "S is empty asf" << endl;
-	} else {
-		cout << "S is full asf" << endl;
-	}
+	StackLL* keywords = new StackLL;
 	
-	//Testing files
-	ifstream myFile("hworld.txt");
-	string x, y = "";
-	myFile >> x >> y;
-
-	cout << x << y;
+	keywords->push("Tits");
+	
+	keywords->push("Ball");
+	
+	keywords->push("Ass");
+	keywords->print();
+	
+	string popped = keywords->pop()->data;
+	keywords->print();
+	
+	cout << "P: " << popped << endl;
 }
