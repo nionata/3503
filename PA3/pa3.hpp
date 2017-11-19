@@ -10,18 +10,27 @@
 #define pa3_hpp
 
 #include <stdio.h>
+#include <string>
 
-class Stack {
-private:
-	int top;
-	int a[10];
+using namespace std;
+
+class Node {
 public:
-	Stack();
-	void push(int x);
-	int pop();
+	Node(string data);
+	string data;
+	Node* next;
+	void print();
+};
+
+class StackLL {
+private:
+	Node* head;
+public:
+	StackLL();
+	void push(string data);
+	Node* pop();
+	void print();
 	bool isEmpty();
-	int getTopIndex();
-	int getValue(int i);
 };
 
 #endif /* pa3_hpp */
