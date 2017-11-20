@@ -20,6 +20,7 @@ public:
 	string data;
 	Node* next;
 	void print();
+	bool contains(string posData);
 };
 
 class StackLL {
@@ -30,6 +31,7 @@ public:
 	void push(string data);
 	Node* pop();
 	void print();
+	bool contains(string posData);
 	bool isEmpty();
 };
 
