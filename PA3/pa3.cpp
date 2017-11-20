@@ -11,6 +11,7 @@
 #include <iostream>
 #include <string>
 #include <climits>
+#include <algorithm>
 
 
 //Implementation for the Node class
